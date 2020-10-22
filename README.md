@@ -51,12 +51,15 @@ WORK IN PROGRESS!!
    * Trust Region Policy Optimization (TRPO)
    * Proximal Policy Optimization (PPO)
    * Actor-Critic with Experience Replay (ACER)
+   * Actor-Critic using Kronecker-Factored Trust Region (ACKTR)
    * Deep Deterministic Policy Gradient (DDPG)
      - DDPG with Hindsight Experience Replay (HER)
    * Twin Delayed Deep Deterministic (TD3)
    * Soft Actor Critic (SAC)
      - SAC Discrete
-
-Model-Based Algorithms
+8. Multi-Agent Algorithms
+   * Multi-Agent DDPG (MADDPG)
+   * Multi-Agent TD3
+   * Multi-Agent SAC
+9. Model-Based Algorithms
    * TODO
-
