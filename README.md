@@ -4,6 +4,8 @@ This is a collection of Reinforcement Learning Algorithms written entirely in Ty
 
 WORK IN PROGRESS!!
 
+## Plan
+
 1. Multi-Arm Bandits Algorithms: Exploration/Exploitation
    * Epsilon-Greedy
    * Upper Confidence Bound
