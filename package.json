@@ -1,0 +1,35 @@
+{
+  "name": "noderl-adventure",
+  "version": "1.0.0",
+  "description": "Collection of Reinforcement Learning Algorithms written entirely in TypeScript for educational purposes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jscriptcoder/NodeRL-Adventure.git"
+  },
+  "keywords": [
+    "nodejs",
+    "reinforcement-learning",
+    "tensorflowjs",
+    "gymie"
+  ],
+  "author": "Francisco Ramos <francisco.ramos@researchlab.ai>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jscriptcoder/NodeRL-Adventure/issues"
+  },
+  "homepage": "https://github.com/jscriptcoder/NodeRL-Adventure#readme",
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^2.6.0",
+    "gymie": "^0.5.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node10": "^1.0.7",
+    "tslint": "^6.1.3",
+    "typedoc": "^0.19.2",
+    "typescript": "^4.0.3"
+  }
+}
