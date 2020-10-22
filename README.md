@@ -47,6 +47,7 @@ WORK IN PROGRESS!!
 7. Actor-Critic Methods
    * Vanilla Actor-Critic
    * Advantage Actor Critic (A2C)
+     - A2C with Generalized Advantage Estimation (GAE)
    * Trust Region Policy Optimization (TRPO)
    * Proximal Policy Optimization (PPO)
    * Actor-Critic with Experience Replay (ACER)
@@ -57,5 +58,5 @@ WORK IN PROGRESS!!
      - SAC Discrete
 
 Model-Based Algorithms
-   * TODO
+   * Dyna
 
