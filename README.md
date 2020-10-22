@@ -58,5 +58,5 @@ WORK IN PROGRESS!!
      - SAC Discrete
 
 Model-Based Algorithms
-   * Dyna
+   * TODO
 
