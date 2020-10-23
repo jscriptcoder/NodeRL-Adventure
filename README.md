@@ -4,6 +4,8 @@ This is a collection of Reinforcement Learning Algorithms written entirely in Ty
 
 WORK IN PROGRESS!!
 
+## Plan
+
 1. Multi-Arm Bandits Algorithms: Exploration/Exploitation
    * Epsilon-Greedy
    * Upper Confidence Bound
@@ -15,23 +17,49 @@ WORK IN PROGRESS!!
    * Truncated Policy Iteration
    * Value Iteration
 3. Monte Carlo Methods
-   * MC Prediction: State Values
-   * MC Prediction: Action Values
+   * MC Prediction
+     - State Values
+     - Action Values
    * MC Control
 4. Temporal-Difference Methods
    * TD Prediction: TD(0)
-   * TD Prediction: State Values
-   * TD Prediction: Action Values
+   * TD Prediction
+     - State Values
+     - Action Values
    * TD Control: Sarsa
    * TD Control: Q-Learning
    * TD Control: Expected Sarsa
 5. Value-Based Methods
-   * TODO
+   * Deep Q-Networks (DQN)
+     - Vanilla DQN
+     - N Step DQN
+     - Double DQN
+     - Dueling DQN
+     - DQN with Prioritized Experience Replay (PER)
+     - DQN with Noisy Networks
+     - Categorical DQN (C51)
+     - Quantile Regression DQN
+     - Rainbow
+     - Normalized Advantage Functions (NAF)
 6. Policy-Based Methods
-   * TODO
+   * REINFORCE
+   * Off-Policy
 7. Actor-Critic Methods
+   * Vanilla Actor-Critic
+   * Advantage Actor Critic (A2C)
+     - A2C with Generalized Advantage Estimation (GAE)
+   * Trust Region Policy Optimization (TRPO)
+   * Proximal Policy Optimization (PPO)
+   * Actor-Critic with Experience Replay (ACER)
+   * Actor-Critic using Kronecker-Factored Trust Region (ACKTR)
+   * Deep Deterministic Policy Gradient (DDPG)
+     - DDPG with Hindsight Experience Replay (HER)
+   * Twin Delayed Deep Deterministic (TD3)
+   * Soft Actor Critic (SAC)
+     - SAC Discrete
+8. Multi-Agent Algorithms
+   * Multi-Agent DDPG (MADDPG)
+   * Multi-Agent TD3
+   * Multi-Agent SAC
+9. Model-Based Algorithms
    * TODO
-
-Model-Based Algorithms
-   * TODO
-
