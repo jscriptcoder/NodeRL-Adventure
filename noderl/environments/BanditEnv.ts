@@ -10,18 +10,18 @@ export default class BanditEnv {
 
   constructor(p_dist: number[], r_dist: number[]) {
 
-    assert(p_dist.length !== 0, 'Empty probability distribution')
-    assert(r_dist.length !== 0, 'Empty reward distribution')
-    assert(p_dist.length === r_dist.length, 'Probability and Reward distribution must be the same length')
-    assert(min(p_dist) >= 0 && max(p_dist) <= 1, 'All probabilities must be between 0 and 1')
+    assert(p_dist.length !== 0, 'p_dist = []')
+    assert(r_dist.length !== 0, 'r_dist = []')
+    assert(p_dist.length === r_dist.length, 'Not p_dist.length == r_dist.length')
+    assert(min(p_dist) >= 0 && max(p_dist) <= 1, 'Not 0 <= p_dist[i] => 1')
 
     this.n_arms = p_dist.length
     this.p_dist = p_dist
     this.r_dist = r_dist
   }
 
-  pull(action: number) {
-    assert(action >= 0 && action < this.n_arms, `Wrong accion passed in: "${action}"`)
+  step(action: number) {
+    assert(action >= 0 && action < this.n_arms, `Wrong accion: ${action}`)
 
     let reward = 0
 

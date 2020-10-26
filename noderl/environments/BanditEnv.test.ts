@@ -11,18 +11,18 @@ test('new BanditEnv', t => {
   t.end()
 })
 
-test('BanditEnv#pull', t => {
+test('BanditEnv#step', t => {
   const probs = [0.2, 0.5, 0.75]
   const rewards = [8, 5, 2.5]
   const bandit = new BanditEnv(probs, rewards)
   
-  t.throws(() => bandit.pull(-1), 'Wrong accion passed in')
+  t.throws(() => bandit.step(-1), 'Wrong accion passed in')
 
   rewards.forEach((reward, arm) => {
     let attempts = 0
     while(true) {
       attempts++
-      if(bandit.pull(arm) === reward) {
+      if(bandit.step(arm) === reward) {
         t.pass(`Arm ${arm} eventually paid off after ${attempts} attempts`)
         break
       }

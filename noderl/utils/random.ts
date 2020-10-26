@@ -9,9 +9,9 @@ export function randint(low = 0, high?: number) {
     [low, high] = [0, low]
   }
 
-  assert(high > low, 'low >= high')
+  assert(high > low, `Not ${high} > ${low}`)
 
-  return Math.floor(Math.random() * (high - low) + low)
+  return Math.floor(uniform() * (high - low) + low)
 }
 
 export function choice<T>(list: T[]): T {
