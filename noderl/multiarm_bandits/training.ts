@@ -4,10 +4,12 @@ import GreedyAgent from './GreedyAgent'
 import EpsilonGreegyAgent from './EpsilonGreegyAgent'
 import UCB1Agent from './UCB1Agent'
 import { LOG_PATH } from '../config'
+import { full } from '../utils/lists'
 
-const PROB_DIST = [0.2, 0.5, 0.75]
-const REWARD_DIST = [1, 1, 1]
-const INIT_VALUE = 10
+const PROB_DIST = [0.2, 0.5, 0.75, 0.15, 0.01, 0.92, 0.88, 0.36, 0.79, 0.9]
+const N = PROB_DIST.length
+const REWARD_DIST = full(N, 1)
+const INIT_VALUE = 0
 const EPSILON = 0.01
 const EPISODES = 100000
 
@@ -18,16 +20,17 @@ const env = new BanditEnv(PROB_DIST, REWARD_DIST)
 // const agent = new EpsilonGreegyAgent(PROB_DIST.length, EPSILON, INIT_VALUE)
 const agent = new UCB1Agent(PROB_DIST.length, INIT_VALUE)
 
-const writer = tf.node.summaryFileWriter(`${LOG_PATH}/bandits`)
+const writer = tf.node.summaryFileWriter(`${LOG_PATH}/${agent.name}`)
 
 let total_reward = 0
 
 if (agent instanceof UCB1Agent) {
-  PROB_DIST.forEach((_, i) => {
+  // Initialization. We try once all the arms
+  for (let i = 0; i < N; i++) {
     const action = agent.pull(i)
     const reward = env.step(action)
     agent.optimize(action, reward)
-  })
+  }
 }
 
 for (let e = 0; e < EPISODES; e++) {
