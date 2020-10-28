@@ -1,5 +1,5 @@
 import test from 'tape'
-import { argmax, range, full, zeros } from './lists'
+import { argmax, range, full, zeros, ones } from './lists'
 
 test('lists.argmax', t => {
   t.ok(argmax([1, 5, 3, 7, 5]) === 3, 'Argmax is 3')
@@ -27,5 +27,11 @@ test('lists.full', t => {
 test('lists.zeros', t => {
   t.deepEqual(zeros(4), [0, 0, 0, 0], 'zeros(4)')
   t.throws(() => zeros(-4), 'Throws invalid array length')
+  t.end()
+})
+
+test('lists.ones', t => {
+  t.deepEqual(ones(4), [1, 1, 1, 1], 'ones(4)')
+  t.throws(() => ones(-3), 'Throws invalid array length')
   t.end()
 })

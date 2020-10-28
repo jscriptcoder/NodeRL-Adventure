@@ -2,6 +2,7 @@ import * as tf from '@tensorflow/tfjs-node'
 import BanditEnv from '../environments/BanditEnv'
 import GreedyAgent from './GreedyAgent'
 import EpsilonGreegyAgent from './EpsilonGreegyAgent'
+import ThomsonSamplingAgent from './ThomsonSamplingAgent'
 import UCB1Agent from './UCB1Agent'
 import { LOG_PATH } from '../config'
 import { full } from '../utils/lists'
@@ -16,9 +17,10 @@ const EPISODES = 100000
 const { log } = console
 
 const env = new BanditEnv(PROB_DIST, REWARD_DIST)
-// const agent = new GreedyAgent(PROB_DIST.length, INIT_VALUE)
-// const agent = new EpsilonGreegyAgent(PROB_DIST.length, EPSILON, INIT_VALUE)
-const agent = new UCB1Agent(PROB_DIST.length, INIT_VALUE)
+// const agent = new GreedyAgent(N, INIT_VALUE)
+// const agent = new EpsilonGreegyAgent(N, EPSILON, INIT_VALUE)
+// const agent = new UCB1Agent(N, INIT_VALUE)
+const agent = new ThomsonSamplingAgent(N, INIT_VALUE)
 
 const writer = tf.node.summaryFileWriter(`${LOG_PATH}/${agent.name}`)
 
@@ -44,7 +46,7 @@ for (let e = 0; e < EPISODES; e++) {
   writer.scalar('Reward', reward, e)
 }
 
-log('Mean estimates:', agent.estimates)
+log('Mean estimates:\n', agent.estimates)
 log(`Total reward: ${total_reward}`)
 log(`Win rate: ${total_reward/EPISODES}`)
 log('Times arms were pulled:', agent.counts)

@@ -46,4 +46,8 @@ export function zeros(size: number): number[] {
   return full(size, 0)
 }
 
+export function ones(size: number): number[] {
+  return full(size, 1)
+}
+
 

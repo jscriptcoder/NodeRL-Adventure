@@ -1,9 +1,8 @@
-import { uniform, choice } from '../utils/random'
 import { argmax } from '../utils/lists'
 import BaseAgent from './BaseAgent'
 
 export default class UCB1Agent extends BaseAgent {
-  private plays = 0
+  private plays = 0 // total plays
 
   ucb_action() {
     const plays = ++this.plays

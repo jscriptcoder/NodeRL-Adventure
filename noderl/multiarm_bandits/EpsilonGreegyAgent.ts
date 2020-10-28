@@ -1,5 +1,4 @@
-import { uniform, choice } from '../utils/random'
-import { range } from '../utils/lists'
+import { uniform } from '../utils/random'
 import GreedyAgent from './GreedyAgent'
 
 export default class EpsilonGreedyAgent extends GreedyAgent {
@@ -7,7 +6,7 @@ export default class EpsilonGreedyAgent extends GreedyAgent {
   protected explored: number = 0
   protected exploited: number = 0
 
-  constructor(n_arms: number, eps: number, init_value: number = 0) {
+  constructor(n_arms: number, eps: number, init_value: number) {
     super(n_arms, init_value)
     this.name += `_eps-${eps}`
     this.eps = eps

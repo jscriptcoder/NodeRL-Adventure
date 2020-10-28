@@ -16,7 +16,7 @@ export default class BaseAgent {
   }
 
   constructor(n_arms: number, init_value: number = 0) {
-    this.name = `${this.constructor.name}_arms-${n_arms}_initvals-${init_value}`
+    this.name = `${this.constructor.name}_arms-${n_arms}_init-${init_value}`
     this.arm_counts = zeros(n_arms)
     this.q_values = full(n_arms, init_value)
     this.actions = range(n_arms)
