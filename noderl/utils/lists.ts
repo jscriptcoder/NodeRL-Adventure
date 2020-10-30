@@ -38,8 +38,12 @@ export function range(start = 0, stop?: number): number[] {
   return [...Array(size).keys()].map(i => i + start)
 }
 
-export function full(size: number, value: number) {
+export function full<T>(size: number, value: T): T[] {
   return Array(size).fill(value)
+}
+
+export function full_matrix<T>(size: Size, value: T): Matrix<T> {
+  return Array(size[0]).fill(Array(size[1]).fill(value))
 }
 
 export function zeros(size: number): number[] {
