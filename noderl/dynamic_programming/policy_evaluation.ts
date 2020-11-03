@@ -1,4 +1,4 @@
-import FrozenLakeEnv, { Transition } from '../environments/FrozenLakeEnv'
+import FrozenLakeEnv from '../environments/FrozenLakeEnv'
 import { zeros } from '../utils/lists'
 
 export default function policy_evaluation(env: FrozenLakeEnv, policy: Matrix<number>, gamma=1, theta=1e-8) {

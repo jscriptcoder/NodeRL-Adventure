@@ -14,7 +14,7 @@ type Tile = 'S' | 'F' | 'H' | 'G'
 type LakeMap = Matrix<Tile>
 type LakeMapDict = { [size: string]: LakeMap }
 
-export interface Transition {
+interface Transition {
   prob: number,
   next_state: State,
   reward: number,
@@ -50,9 +50,9 @@ export default class FrozenLakeEnv {
   private size: Size
   private lake: LakeMap = []
   private current_state: State = 0
+  
   public n_actions: number = 4
   public n_states: number = 0
-
   public MDP: Matrix<Transition[]>
 
   constructor(size: Size = [4, 4], is_slippery = true, prob_frozen = 0.8) {
