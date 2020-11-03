@@ -8,12 +8,13 @@ enum Action {
   UP = 3,
 }
 
-type State = Coordinates
+type Position = [number, number]
+type State = number
 type Tile = 'S' | 'F' | 'H' | 'G'
 type LakeMap = Matrix<Tile>
 type LakeMapDict = { [size: string]: LakeMap }
 
-interface Transition {
+export interface Transition {
   prob: number,
   next_state: State,
   reward: number,
@@ -48,9 +49,9 @@ export default class FrozenLakeEnv {
 
   private size: Size
   private lake: LakeMap = []
-  private current_state: Coordinates = [0, 0]
-  private n_actions: number = 4
-  private n_states: number = 0
+  private current_state: State = 0
+  public n_actions: number = 4
+  public n_states: number = 0
 
   public MDP: Matrix<Transition[]>
 
@@ -59,52 +60,22 @@ export default class FrozenLakeEnv {
     this.lake = FrozenLakeEnv.generate_lake(size, prob_frozen)
     this.n_states = size[0] * size[1]
 
-    this.compute_MDP(is_slippery)
+    this.compute_dynamics(is_slippery)
   }
 
-  private compute_MDP(is_slippery: boolean): void {
-    const { size, n_actions } = this
-    const MDP = this.MDP = full_matrix(size, [] as Transition[])
-
-    for(let row = 0; row < size[0]; row++){
-      for(let col = 0; col < size[1]; col++){
-        for(let action = 0; action < n_actions; action++) {
-          const tile = this.get_tile([row, col])
-
-          if (['H', 'G'].includes(tile)) {
-
-            MDP[row][col].push({
-              prob: 1.0,
-              next_state: [row, col],
-              reward: 0,
-              done: true,
-            })
-
-          } else if (is_slippery) {
-
-            const all_actions = [
-              (action - 1) % n_actions,
-              action,
-              (action + 1) % n_actions,
-            ]
-
-            for(let a of all_actions) {
-              const transition = this.get_transition([row, col], a)
-              transition.prob = 1/all_actions.length // uniform probs
-              MDP[row][col].push(transition)
-            }
-
-          } else {
-            const transition = this.get_transition([row, col], action)
-            MDP[row][col].push(transition)
-          }
-        }
-      }
-    }
+  private to_state(position: Position): State {
+    const [ row, col ] = position
+    return row * this.size[1] + col
   }
 
-  private calc_next_state(state: State, action: Action): State {
-    let [ row, col ] = state
+  private to_position(state: State): Position {
+    const row = Math.floor(state / this.size[1])
+    const col = state - row * this.size[1]
+    return [row, col] as Position
+  }
+
+  private calc_next_position(position: Position, action: Action): Position {
+    let [ row, col ] = position
 
     switch(action) {
       case Action.LEFT:
@@ -120,35 +91,90 @@ export default class FrozenLakeEnv {
         row = Math.max(row - 1, 0)
     }
 
-    return [row, col] as State
+    return [row, col] as Position
   }
 
-  private get_tile(state: State): Tile {
-    const [ row, col ] = state
+  private get_tile(position: Position): Tile {
+    const [ row, col ] = position
     return this.lake[row][col]
   }
 
-  private get_transition(state: State, action: Action): Transition {
-    const next_state = this.calc_next_state(state, action)
-    const tile = this.get_tile(next_state)
+  private get_transition(position: Position, action: Action): Transition {
+    const next_position = this.calc_next_position(position, action)
+    const tile = this.get_tile(next_position)
+    const next_state = this.to_state(next_position)
     const done = ['H', 'G'].includes(tile)
     const reward = Number(tile === 'G')
 
     return {
-      prob: 1,
+      prob: 1.0,
       next_state,
       reward,
       done,
     }
   }
 
+  private compute_dynamics(is_slippery: boolean): void {
+    const { size, n_states, n_actions } = this
+    const MDP = this.MDP = full_matrix([n_states, n_actions], [] as Transition[])
+
+    for(let row = 0; row < size[0]; row++){
+      for(let col = 0; col < size[1]; col++){
+
+        const position = [row, col] as Position
+        const state = this.to_state(position)
+
+        for(let action = 0; action < n_actions; action++) {
+          const tile = this.get_tile(position)
+
+          if (['H', 'G'].includes(tile)) {
+
+            MDP[state][action].push({
+              prob: 1.0,
+              next_state: state,
+              reward: 0,
+              done: true,
+            })
+
+          } else if (is_slippery) {
+
+            // Floor is slippery, this means that two other
+            // actions could happen if you take a step in a
+            // direction. E.g.
+            //   Intended direction: up (or down)
+            //   Unintended outcome: left or right
+            //
+            //   Intended direction: right (or left)
+            //   Unintended outcome: up or down
+            const potential_actions = [
+              (action - 1) % n_actions, // unintended
+              action, // intended
+              (action + 1) % n_actions, // unintended
+            ]
+            const n_all = potential_actions.length
+
+            for(let a of potential_actions) {
+              const transition = this.get_transition(position, a)
+              transition.prob = 1/n_all // uniform probs
+              MDP[state][action].push(transition)
+            }
+
+          } else {
+            const transition = this.get_transition(position, action)
+            MDP[state][action].push(transition)
+          }
+        }
+      }
+    }
+  }
+
   reset(): State {
-    this.current_state = [0, 0]
-    return [ ...this.current_state ] // it's safer to clone
+    return this.current_state = 0
   }
 
   step(action: Action): Transition {
-    const transition = this.get_transition(this.current_state, action)
+    const current_position = this.to_position(this.current_state)
+    const transition = this.get_transition(current_position, action)
     this.current_state = transition.next_state
     return transition
   }
