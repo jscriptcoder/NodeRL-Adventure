@@ -5,7 +5,7 @@ export default class GreedyAgent extends BaseAgent {
 
   greedy_action(): number {
     // Greedy action
-    const action = argmax(this.q_values)
+    const action = argmax(this.qValues)
     return this.pull(action)
   }
 

@@ -6,14 +6,14 @@ export default class ThomsonSamplingAgent extends BaseAgent {
   private a: number[]
   private b: number[]
 
-  constructor(n_arms: number, init_value: number) {
-    super(n_arms, init_value)
-    this.a = ones(n_arms)
-    this.b = ones(n_arms)
+  constructor(nArms: number, initValue: number) {
+    super(nArms, initValue)
+    this.a = ones([nArms])
+    this.b = ones([nArms])
   }
 
-  sample_action(): number {
-    const values = this.q_values.map((estimate, i) => {
+  sampleAction(): number {
+    const values = this.qValues.map((estimate, i) => {
       const [a, b] = [this.a[i], this.b[i]]
       return Beta(a, b) // samples from a Beta distribution
     })
@@ -23,7 +23,7 @@ export default class ThomsonSamplingAgent extends BaseAgent {
   }
 
   act() {
-    return this.sample_action()
+    return this.sampleAction()
   }
 
   optimize(action: number, reward: number) {

@@ -4,10 +4,10 @@ import BaseAgent from './BaseAgent'
 export default class UCB1Agent extends BaseAgent {
   private plays = 0 // total plays
 
-  ucb_action() {
+  ucbAction() {
     const plays = ++this.plays
-    const values = this.q_values.map((estimate, i) => {
-      const arm_count = this.arm_counts[i]
+    const values = this.qValues.map((estimate, i) => {
+      const arm_count = this.armCounts[i]
       return estimate + Math.sqrt(2 * Math.log(plays)/ arm_count)
     })
 
@@ -16,6 +16,6 @@ export default class UCB1Agent extends BaseAgent {
   }
 
   act(): number {
-    return this.ucb_action()
+    return this.ucbAction()
   }
 }

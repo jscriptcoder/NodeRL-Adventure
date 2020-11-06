@@ -6,8 +6,8 @@ export default class EpsilonGreedyAgent extends GreedyAgent {
   protected explored: number = 0
   protected exploited: number = 0
 
-  constructor(n_arms: number, eps: number, init_value: number) {
-    super(n_arms, init_value)
+  constructor(nArms: number, eps: number, initValue: number) {
+    super(nArms, initValue)
     this.name += `_eps-${eps}`
     this.eps = eps
   }
@@ -15,14 +15,14 @@ export default class EpsilonGreedyAgent extends GreedyAgent {
   act(): number {
     if (uniform() < this.eps) {
       this.explored++
-      return this.random_action()
+      return this.randomAction()
     } else {
       this.exploited++
       return this.greedy_action()
     }
   }
 
-  explore_exploit_rate(): number[] {
+  exploreExploitRate(): number[] {
     const total = this.explored + this.exploited
     return [this.explored/total, this.exploited/total]
   }

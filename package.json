@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "ts-node node_modules/.bin/tape noderl/**/*.test.ts",
-    "bandit-training": "ts-node noderl/multiarm_bandits/training.ts"
+    "bandit-running": "ts-node noderl/multiarm_bandits/running.ts",
+    "dynamic-running": "ts-node noderl/dynamic_programming/running.ts"
   },
   "repository": {
     "type": "git",

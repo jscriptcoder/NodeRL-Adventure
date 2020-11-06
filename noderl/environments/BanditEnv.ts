@@ -4,29 +4,29 @@ import { assert } from '../utils/assertion'
 
 export default class BanditEnv {
 
-  private n_arms: number
-  private p_dist: number[]
-  private r_dist: number[]
+  private nArms: number
+  private pDist: number[]
+  private rDist: number[]
 
-  constructor(p_dist: number[], r_dist: number[]) {
+  constructor(pDist: number[], rDist: number[]) {
 
-    assert(p_dist.length !== 0, 'p_dist = []')
-    assert(r_dist.length !== 0, 'r_dist = []')
-    assert(p_dist.length === r_dist.length, 'Not p_dist.length == r_dist.length')
-    assert(min(p_dist) >= 0 && max(p_dist) <= 1, 'Not 0 <= p_dist[i] => 1')
+    assert(pDist.length !== 0, 'pDist = []')
+    assert(rDist.length !== 0, 'rDist = []')
+    assert(pDist.length === rDist.length, 'Not pDist.length == rDist.length')
+    assert(min(pDist) >= 0 && max(pDist) <= 1, 'Not 0 <= pDist[i] => 1')
 
-    this.n_arms = p_dist.length
-    this.p_dist = p_dist
-    this.r_dist = r_dist
+    this.nArms = pDist.length
+    this.pDist = pDist
+    this.rDist = rDist
   }
 
   step(action: number) {
-    assert(action >= 0 && action < this.n_arms, `Wrong accion: ${action}`)
+    assert(action >= 0 && action < this.nArms, `Wrong accion: ${action}`)
 
     let reward = 0
 
-    if (uniform() < this.p_dist[action]) {
-      reward = this.r_dist[action]
+    if (uniform() < this.pDist[action]) {
+      reward = this.rDist[action]
     }
 
     return reward

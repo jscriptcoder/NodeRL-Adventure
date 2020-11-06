@@ -5,11 +5,11 @@ import EpsilonGreegyAgent from './EpsilonGreegyAgent'
 import ThomsonSamplingAgent from './ThomsonSamplingAgent'
 import UCB1Agent from './UCB1Agent'
 import { LOG_PATH } from '../config'
-import { full } from '../utils/lists'
+import { ones } from '../utils/lists'
 
 const PROB_DIST = [0.2, 0.5, 0.75, 0.15, 0.01, 0.92, 0.88, 0.36, 0.79, 0.9]
 const N = PROB_DIST.length
-const REWARD_DIST = full(N, 1)
+const REWARD_DIST = ones<number>([N])
 const INIT_VALUE = 0
 const EPSILON = 0.01
 const EPISODES = 100000
@@ -24,7 +24,7 @@ const agent = new ThomsonSamplingAgent(N, INIT_VALUE)
 
 const writer = tf.node.summaryFileWriter(`${LOG_PATH}/${agent.name}`)
 
-let total_reward = 0
+let totalReward = 0
 
 if (agent instanceof UCB1Agent) {
   // Initialization. We try once all the arms
@@ -39,7 +39,7 @@ for (let e = 0; e < EPISODES; e++) {
   const action = agent.act()
   const reward = env.step(action)
 
-  total_reward += reward
+  totalReward += reward
 
   agent.optimize(action, reward)
 
@@ -47,10 +47,10 @@ for (let e = 0; e < EPISODES; e++) {
 }
 
 log('Mean estimates:\n', agent.estimates)
-log(`Total reward: ${total_reward}`)
-log(`Win rate: ${total_reward/EPISODES}`)
+log(`Total reward: ${totalReward}`)
+log(`Win rate: ${totalReward/EPISODES}`)
 log('Times arms were pulled:', agent.counts)
 
 if (agent instanceof EpsilonGreegyAgent) {
-  log('Exploration/Exploitation rate:', agent.explore_exploit_rate())
+  log('Exploration/Exploitation rate:', agent.exploreExploitRate())
 }

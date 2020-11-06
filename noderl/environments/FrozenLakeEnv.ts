@@ -1,5 +1,4 @@
-import { full_matrix } from "../utils/lists"
-import { choice_NxN } from "../utils/random"
+import { fill, Size } from "../utils/lists"
 
 enum Action {
   LEFT = 0,
@@ -11,15 +10,17 @@ enum Action {
 type Position = [number, number]
 type State = number
 type Tile = 'S' | 'F' | 'H' | 'G'
-type LakeMap = Matrix<Tile>
+type LakeMap = Tile[][]
 type LakeMapDict = { [size: string]: LakeMap }
 
-interface Transition {
+export interface Transition {
   prob: number,
-  next_state: State,
+  nextState: State,
   reward: number,
   done: boolean,
 }
+
+export type MDP = Transition[][][]
 
 export default class FrozenLakeEnv {
 
@@ -42,7 +43,7 @@ export default class FrozenLakeEnv {
     ]
   }
 
-  static generate_lake(size: Size, prob_frozen: number): LakeMap {
+  static generateLake(size: Size, probFrozen: number): LakeMap {
     // TODO: implement a random generator
     return FrozenLakeEnv.MAPS['4x4']
   }
@@ -51,30 +52,30 @@ export default class FrozenLakeEnv {
   private lake: LakeMap = []
   private current_state: State = 0
   
-  public n_actions: number = 4
-  public n_states: number = 0
-  public MDP: Matrix<Transition[]>
+  public nActions: number = 4 // LEFT DOWN RIGHT UP
+  public nStates: number = 0
+  public dynamics: MDP
 
-  constructor(size: Size = [4, 4], is_slippery = true, prob_frozen = 0.8) {
+  constructor(size: Size = [4, 4], is_slippery = true, probFrozen = 0.8) {
     this.size = size
-    this.lake = FrozenLakeEnv.generate_lake(size, prob_frozen)
-    this.n_states = size[0] * size[1]
+    this.lake = FrozenLakeEnv.generateLake(size, probFrozen)
+    this.nStates = size[0] * size[1]
 
-    this.compute_dynamics(is_slippery)
+    this.computeDynamics(is_slippery)
   }
 
-  private to_state(position: Position): State {
+  private toState(position: Position): State {
     const [ row, col ] = position
     return row * this.size[1] + col
   }
 
-  private to_position(state: State): Position {
+  private toPosition(state: State): Position {
     const row = Math.floor(state / this.size[1])
     const col = state - row * this.size[1]
     return [row, col] as Position
   }
 
-  private calc_next_position(position: Position, action: Action): Position {
+  private calcNextPosition(position: Position, action: Action): Position {
     let [ row, col ] = position
 
     switch(action) {
@@ -94,44 +95,46 @@ export default class FrozenLakeEnv {
     return [row, col] as Position
   }
 
-  private get_tile(position: Position): Tile {
+  private getTile(position: Position): Tile {
     const [ row, col ] = position
     return this.lake[row][col]
   }
 
-  private get_transition(position: Position, action: Action): Transition {
-    const next_position = this.calc_next_position(position, action)
-    const tile = this.get_tile(next_position)
-    const next_state = this.to_state(next_position)
+  private getTransition(position: Position, action: Action): Transition {
+    const next_position = this.calcNextPosition(position, action)
+    const tile = this.getTile(next_position)
+    const nextState = this.toState(next_position)
     const done = ['H', 'G'].includes(tile)
     const reward = Number(tile === 'G')
 
     return {
       prob: 1.0,
-      next_state,
+      nextState,
       reward,
       done,
     }
   }
 
-  private compute_dynamics(is_slippery: boolean): void {
-    const { size, n_states, n_actions } = this
-    const MDP = this.MDP = full_matrix([n_states, n_actions], [] as Transition[])
+  private computeDynamics(is_slippery: boolean): void {
+    const { size, nStates, nActions } = this
+    const dynamics = this.dynamics = fill<Transition[][], Transition[]>([nStates, nActions])
 
     for(let row = 0; row < size[0]; row++){
       for(let col = 0; col < size[1]; col++){
 
         const position = [row, col] as Position
-        const state = this.to_state(position)
+        const state = this.toState(position)
 
-        for(let action = 0; action < n_actions; action++) {
-          const tile = this.get_tile(position)
+        for(let action = 0; action < nActions; action++) {
+          dynamics[state][action] = dynamics[state][action] || []
+          
+          const tile = this.getTile(position)
 
           if (['H', 'G'].includes(tile)) {
 
-            MDP[state][action].push({
+            dynamics[state][action].push({
               prob: 1.0,
-              next_state: state,
+              nextState: state,
               reward: 0,
               done: true,
             })
@@ -147,21 +150,21 @@ export default class FrozenLakeEnv {
             //   Intended direction: right (or left)
             //   Unintended outcome: up or down
             const potential_actions = [
-              (action - 1) % n_actions, // unintended
+              (action - 1) % nActions, // unintended
               action, // intended
-              (action + 1) % n_actions, // unintended
+              (action + 1) % nActions, // unintended
             ]
             const n_all = potential_actions.length
 
             for(let a of potential_actions) {
-              const transition = this.get_transition(position, a)
+              const transition = this.getTransition(position, a)
               transition.prob = 1/n_all // uniform probs
-              MDP[state][action].push(transition)
+              dynamics[state][action].push(transition)
             }
 
           } else {
-            const transition = this.get_transition(position, action)
-            MDP[state][action].push(transition)
+            const transition = this.getTransition(position, action)
+            dynamics[state][action].push(transition)
           }
         }
       }
@@ -173,9 +176,9 @@ export default class FrozenLakeEnv {
   }
 
   step(action: Action): Transition {
-    const current_position = this.to_position(this.current_state)
-    const transition = this.get_transition(current_position, action)
-    this.current_state = transition.next_state
+    const current_position = this.toPosition(this.current_state)
+    const transition = this.getTransition(current_position, action)
+    this.current_state = transition.nextState
     return transition
   }
 }

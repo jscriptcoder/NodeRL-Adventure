@@ -1,6 +1,8 @@
 import { choice } from './random'
 import { assert } from "./assertion"
 
+export type Size = number[]
+
 export function min(list: number[]): number {
     return Math.min(...list)
 }
@@ -38,20 +40,25 @@ export function range(start = 0, stop?: number): number[] {
   return [...Array(size).keys()].map(i => i + start)
 }
 
-export function full<T>(size: number, value: T): T[] {
-  return Array(size).fill(value)
+function recursive_fill<T, V>(size: Size, value: V, dim: number): V | T[] {
+  if (dim === size.length) {
+    return value
+  } else {
+    return Array(size[dim])
+      .fill(recursive_fill(size, value, dim+1))
+      // Otherwise we'll have the same array instance on each segment
+      .map(item => Array.isArray(item) ? item.slice(0) : item)
+  }
 }
 
-export function full_matrix<T>(size: Size, value: T): Matrix<T> {
-  return Array(size[0]).fill(Array(size[1]).fill(value))
+export function fill<T, V>(size: Size, value: V = null): T[] {
+  return recursive_fill<T, V>(size, value, 0) as T[]
 }
 
-export function zeros(size: number): number[] {
-  return full(size, 0)
+export function zeros<T>(size: Size): T[] {
+  return fill<T, number>(size, 0)
 }
 
-export function ones(size: number): number[] {
-  return full(size, 1)
+export function ones<T>(size: Size): T[] {
+  return fill<T, number>(size, 1)
 }
-
-
