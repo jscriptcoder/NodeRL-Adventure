@@ -21,11 +21,7 @@ function qFromV(env: FrozenLakeEnv, V: StateValue, state: number, gamma: number)
 }
 
 export default function policyImprovement(env: FrozenLakeEnv, V: StateValue, gamma=1): Policy {
-  const policy = zeros<number[]>([
-    env.nStates, 
-    env.nActions]).map(row => 
-    row.map(val => val / env.nActions)
-  )
+  const policy = zeros<number[]>([env.nStates, env.nActions])
 
   for(let state = 0; state < env.nStates; state++) {
     const q = qFromV(env, V, state, gamma)

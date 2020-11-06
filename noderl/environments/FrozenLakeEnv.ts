@@ -1,28 +1,11 @@
-import { fill, Size } from "../utils/lists"
+import GridWorld, { Position, Action, Transition, MDP } from './GridWorld'
+import { fill } from "../utils/lists"
 
-enum Action {
-  LEFT = 0,
-  DOWN = 1,
-  RIGHT = 2,
-  UP = 3,
-}
-
-type Position = [number, number]
-type State = number
 type Tile = 'S' | 'F' | 'H' | 'G'
 type LakeMap = Tile[][]
 type LakeMapDict = { [size: string]: LakeMap }
 
-export interface Transition {
-  prob: number,
-  nextState: State,
-  reward: number,
-  done: boolean,
-}
-
-export type MDP = Transition[][][]
-
-export default class FrozenLakeEnv {
+export default class FrozenLakeEnv extends GridWorld<LakeMap, Tile> {
 
   static MAPS: LakeMapDict = {
     '4x4': [
@@ -48,77 +31,26 @@ export default class FrozenLakeEnv {
     return FrozenLakeEnv.MAPS['4x4']
   }
 
-  private size: Size
-  private lake: LakeMap = []
-  private current_state: State = 0
-  
-  public nActions: number = 4 // LEFT DOWN RIGHT UP
-  public nStates: number = 0
-  public dynamics: MDP
-
   constructor(size: Size = [4, 4], is_slippery = true, probFrozen = 0.8) {
-    this.size = size
-    this.lake = FrozenLakeEnv.generateLake(size, probFrozen)
+    super(size)
+    this.grid = FrozenLakeEnv.generateLake(size, probFrozen)
     this.nStates = size[0] * size[1]
 
     this.computeDynamics(is_slippery)
   }
 
-  private toState(position: Position): State {
-    const [ row, col ] = position
-    return row * this.size[1] + col
+  protected calcReward(tile: Tile): number {
+    return Number(tile === 'G')
   }
 
-  private toPosition(state: State): Position {
-    const row = Math.floor(state / this.size[1])
-    const col = state - row * this.size[1]
-    return [row, col] as Position
+  protected calcDone(tile: Tile): Done {
+    return ['H', 'G'].includes(tile)
   }
 
-  private calcNextPosition(position: Position, action: Action): Position {
-    let [ row, col ] = position
-
-    switch(action) {
-      case Action.LEFT:
-        col = Math.max(col - 1, 0)
-        break
-      case Action.DOWN:
-        row = Math.min(row + 1, this.size[0] - 1)
-        break;
-      case Action.RIGHT:
-        col = Math.min(col + 1, this.size[1] - 1)
-        break
-      case Action.UP:
-        row = Math.max(row - 1, 0)
-    }
-
-    return [row, col] as Position
-  }
-
-  private getTile(position: Position): Tile {
-    const [ row, col ] = position
-    return this.lake[row][col]
-  }
-
-  private getTransition(position: Position, action: Action): Transition {
-    const next_position = this.calcNextPosition(position, action)
-    const tile = this.getTile(next_position)
-    const nextState = this.toState(next_position)
-    const done = ['H', 'G'].includes(tile)
-    const reward = Number(tile === 'G')
-
-    return {
-      prob: 1.0,
-      nextState,
-      reward,
-      done,
-    }
-  }
-
-  private computeDynamics(is_slippery: boolean): void {
-    const { size, nStates, nActions } = this
-    const dynamics = this.dynamics = fill<Transition[][], Transition[]>([nStates, nActions])
-
+  protected computeDynamics(is_slippery: boolean): MDP {
+    const dynamics = super.computeDynamics()
+    const { size, nActions } = this
+    
     for(let row = 0; row < size[0]; row++){
       for(let col = 0; col < size[1]; col++){
 
@@ -169,16 +101,7 @@ export default class FrozenLakeEnv {
         }
       }
     }
-  }
 
-  reset(): State {
-    return this.current_state = 0
-  }
-
-  step(action: Action): Transition {
-    const current_position = this.toPosition(this.current_state)
-    const transition = this.getTransition(current_position, action)
-    this.current_state = transition.nextState
-    return transition
+    return dynamics
   }
 }

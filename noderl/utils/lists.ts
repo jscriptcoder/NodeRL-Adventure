@@ -62,3 +62,7 @@ export function zeros<T>(size: Size): T[] {
 export function ones<T>(size: Size): T[] {
   return fill<T, number>(size, 1)
 }
+
+export function clone<T>(list: T[]): T[] {
+  return JSON.parse(JSON.stringify(list)) as T[]
+}

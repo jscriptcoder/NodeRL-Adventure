@@ -1,4 +1,4 @@
-import FrozenLakeEnv, { Transition, MDP } from '../environments/FrozenLakeEnv'
+import FrozenLakeEnv from '../environments/FrozenLakeEnv'
 import { zeros } from '../utils/lists'
 import { Policy, StateValue } from './types'
 
