@@ -1,40 +1,37 @@
 import { assert } from "../utils/assertion"
 import { fill } from "../utils/lists"
-import { Transition } from "./Env"
+import { DiscreteStep, TransitionWithProb } from "./Env"
 
-export type State = number
+export type GridState = number
+export type GridTransition = TransitionWithProb<Discrete>
 
-export enum Action {
+export enum GridAction {
   LEFT = 0,
   DOWN = 1,
   RIGHT = 2,
   UP = 3,
 }
 
-export type Position = [number, number]
+export type GridPosition = [number, number]
 
-export interface TransitionWithProb extends Transition<number> {
-  prob: Probability
-}
+export type MDP = GridTransition[][][]
 
-export type MDP = TransitionWithProb[][][]
-
-export function toState(position: Position, size: Size): number {
+export function toState(position: GridPosition, size: Size): number {
   const [ row, col ] = position
   return row * size[1] + col
 }
 
-export function toPosition(state: State, size: Size): Position {
+export function toPosition(state: GridState, size: Size): GridPosition {
   const row = Math.floor(state / size[1])
   const col = state - row * size[1]
-  return [row, col] as Position
+  return [row, col] as GridPosition
 }
 
 export default abstract class GridWorld<G extends T[][], T> {
 
   protected size: Size
   protected grid: G
-  protected current_state: State = 0
+  protected current_state: GridState = 0
   
   public nActions: number = 4
   public nStates: number
@@ -48,44 +45,44 @@ export default abstract class GridWorld<G extends T[][], T> {
     this.nStates = size[0] * size[1]
   }
 
-  protected toState(position: Position): State {
+  protected toState(position: GridPosition): GridState {
     return toState(position, this.size)
   }
 
-  protected toPosition(state: State): Position {
+  protected toPosition(state: GridState): GridPosition {
     return toPosition(state, this.size)
   }
 
-  protected calcNextPosition(position: Position, action: Action): Position {
+  protected calcNextPosition(position: GridPosition, action: GridAction): GridPosition {
     let [ row, col ] = position
 
     switch(action) {
-      case Action.LEFT:
+      case GridAction.LEFT:
         col = Math.max(col - 1, 0)
         break
-      case Action.DOWN:
+      case GridAction.DOWN:
         row = Math.min(row + 1, this.size[0] - 1)
         break;
-      case Action.RIGHT:
+      case GridAction.RIGHT:
         col = Math.min(col + 1, this.size[1] - 1)
         break
-      case Action.UP:
+      case GridAction.UP:
         row = Math.max(row - 1, 0)
     }
 
-    return [row, col] as Position
+    return [row, col] as GridPosition
   }
 
-  protected getTile(position: Position): T {
+  protected getTile(position: GridPosition): T {
     const [ row, col ] = position
     return this.grid[row][col]
   }
 
-  protected abstract calcReward(tile: T): number
+  protected abstract calcReward(tile: T): Reward
 
   protected abstract calcDone(tile: T): Done
 
-  protected getTransition(position: Position, action: Action): TransitionWithProb {
+  protected getTransition(position: GridPosition, action: GridAction): GridTransition {
     const next_position = this.calcNextPosition(position, action)
     const tile = this.getTile(next_position)
     const nextState = this.toState(next_position)
@@ -105,14 +102,14 @@ export default abstract class GridWorld<G extends T[][], T> {
 
     assert(nStates > 0 && nActions > 0, 'Num. of states and/or actions < 1')
 
-    return this.dynamics = fill<TransitionWithProb[][], TransitionWithProb[]>([nStates, nActions])
+    return this.dynamics = fill<GridTransition[][], GridTransition[]>([nStates, nActions])
   }
 
-  reset(): State {
+  reset(): DiscreteState {
     return this.current_state = 0
   }
 
-  step(action: Action): TransitionWithProb {
+  step(action: GridAction): GridTransition {
     const current_position = this.toPosition(this.current_state)
     const transition = this.getTransition(current_position, action)
     this.current_state = transition.nextState

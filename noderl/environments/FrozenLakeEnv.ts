@@ -1,4 +1,4 @@
-import GridWorld, { Position, Action, Transition, MDP } from './GridWorld'
+import GridWorld, { Position, Action, Transition, MDP } from './GridWorldEnv'
 import { fill } from "../utils/lists"
 
 type Tile = 'S' | 'F' | 'H' | 'G'
